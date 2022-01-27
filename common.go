@@ -86,5 +86,7 @@ func (cfg *ConfigFile) GetBoolValueOrDefault(section, key string, defaultVal boo
 }
 
 func (cfg *ConfigFile) Reload() {
-	cfg.load(cfg.path)
+	newCfg := newConfig(cfg.path)
+	newCfg.load(newCfg.path)
+	cfg.data = newCfg.data
 }
