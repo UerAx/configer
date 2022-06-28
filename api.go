@@ -2,6 +2,14 @@ package configer
 
 import "strconv"
 
+func (cfg *ConfigFile) GetValueOrDefault(key string, defaultValue string) string {
+	value, err := cfg.getValue("", key)
+	if err != nil {
+		return defaultValue
+	}
+	return value
+}
+
 func (cfg *ConfigFile) GetStringValueOrDefault(section, key, defaultVal string) string {
 	value, err := cfg.getValue(section, key)
 	if err != nil {
@@ -23,6 +31,7 @@ func (cfg *ConfigFile) GetIntValueOrDefault(section, key string, defaultVal int)
 }
 
 func (cfg *ConfigFile) GetInt64ValueOrDefault(section, key string, defaultVal int64) int64 {
+	
 	value, err := cfg.getValue(section, key)
 	if err != nil {
 		return defaultVal
@@ -35,6 +44,7 @@ func (cfg *ConfigFile) GetInt64ValueOrDefault(section, key string, defaultVal in
 }
 
 func (cfg *ConfigFile) GetInt32ValueOrDefault(section, key string, defaultVal int32) int32 {
+
 	value, err := cfg.getValue(section, key)
 	if err != nil {
 		return defaultVal
@@ -47,6 +57,7 @@ func (cfg *ConfigFile) GetInt32ValueOrDefault(section, key string, defaultVal in
 }
 
 func (cfg *ConfigFile) GetFloat32ValueOrDefault(section, key string, defaultVal float32) float32 {
+
 	value, err := cfg.getValue(section, key)
 	if err != nil {
 		return defaultVal
@@ -60,6 +71,7 @@ func (cfg *ConfigFile) GetFloat32ValueOrDefault(section, key string, defaultVal 
 }
 
 func (cfg *ConfigFile) GetFloat64ValueOrDefault(section, key string, defaultVal float64) float64 {
+
 	value, err := cfg.getValue(section, key)
 	if err != nil {
 		return defaultVal
@@ -73,6 +85,7 @@ func (cfg *ConfigFile) GetFloat64ValueOrDefault(section, key string, defaultVal 
 }
 
 func (cfg *ConfigFile) GetBoolValueOrDefault(section, key string, defaultVal bool) bool {
+
 	value, err := cfg.getValue(section, key)
 	if err != nil {
 		return defaultVal
@@ -86,7 +99,5 @@ func (cfg *ConfigFile) GetBoolValueOrDefault(section, key string, defaultVal boo
 }
 
 func (cfg *ConfigFile) Reload() {
-	newCfg := newConfig(cfg.path)
-	newCfg.load(newCfg.path)
-	cfg.data = newCfg.data
+	cfg.load(cfg.Path)
 }
