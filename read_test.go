@@ -7,18 +7,9 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if 1 != cfg.GetIntValueOrDefault("test", "test", 1) {
-		t.Fatal()
-	}
-	if 1 != cfg.GetIntValueOrDefault("test", "test5", 1) {
-		t.Fatal()
-	}
-	if cfg.GetBoolValueOrDefault("test", "test2", false) {
-		t.Fatal()
-	}
+	print(cfg.GetStringValueOrDefault("", "bbb","1"))
 	cfg.Reload()
-	if 1 != cfg.GetIntValueOrDefault("test", "test", 1) {
-		t.Fatal()
-	}
+	print(cfg.GetStringValueOrDefault("", "bbb","1"))
+
 
 }
