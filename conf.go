@@ -7,6 +7,7 @@
 package goconf
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -18,25 +19,31 @@ import (
 )
 
 type CfgFile struct {
-	Files	[]string
-	// fixme 由于是map[string]interface{}格式 struct暂无法支持
+	//采用替代方式更新数据,重载的时候刚好查询数据的概率低
+	//无需加锁
+	//mx 		sync.Mutex
+	Path	string
+	File	string
 	Data	map[string]interface{}
-	//fixme 后期后改为双类型的data struct和map分开
-	isStruct bool
+	pre		map[string]interface{}
 }
 
 func NewCfgFile() *CfgFile {
-	return &CfgFile{make([]string, 0), make(map[string]interface{}, 0), false}
+	return &CfgFile{Data: make(map[string]interface{}, 0), pre: make(map[string]interface{}, 0)}
 }
 
 func (t *CfgFile) New() *CfgFile {
-	return &CfgFile{make([]string, 0), make(map[string]interface{}, 0), false}
+	return &CfgFile{Data: make(map[string]interface{}, 0), pre: make(map[string]interface{}, 0)}
 }
 
-func (t *CfgFile) ReadAll(path string) {
+/*
+* read all configuration file on this path
+* @param path string 文件路径
+*/
+func (t *CfgFile) ReadAll(path string) error {
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
-		log.Printf("文件目录打开出错 : %v", err)
+		return fmt.Errorf("文件目录打开出错 : %v", err)
 	}
 	
 	for _, file := range dir {
@@ -44,58 +51,63 @@ func (t *CfgFile) ReadAll(path string) {
 		if file.IsDir() {
 			t.ReadAll(p)
 		} else {
-			t.ReadConfig(p)
+			err = t.ReadConfig(p)
+			if err != nil {
+				log.Println(err)
+			}
 		}
-		
 	}
+	t.Data = t.pre
+	t.Path = path
+	return nil
 }
 
-func (t *CfgFile) ReadConfig(file string, obj... interface{}) {
+/*
+* if you just have one configuration file, that you can use this method
+* @param file string 配置文件绝对路径或者相对路径
+*/
+func (t *CfgFile) ReadConfig(file string) error {
 	
 	f, err := os.Stat(file)
 	
 	if err != nil || f.IsDir() {
-		log.Printf("配置文件或者文件夹不存在 : %v", err)
+		return fmt.Errorf("配置文件或者文件夹不存在 : %v", err)
 	}
 	
 	ext := strings.ToLower(path.Ext(file))
-
-	if len(obj) == 0 {
-		obj = append(obj, make(map[string]interface{})) 
-	} else {
-		t.isStruct = true
-	}
 	
 	switch ext {
 	case ".yaml":
-		data, err := category.ReadYaml(file, obj[0])
+		data, err := category.ReadYaml(file, struct{}{})
 		if err != nil {
-			log.Printf("配置文件读取出错 %v", err)
+			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.Data[f.Name()] = data
+		t.pre[f.Name()] = data
 
 	case ".yml":
-		data, err := category.ReadYaml(file, obj[0])
+		data, err := category.ReadYaml(file, struct{}{})
 		if err != nil {
-			log.Printf("配置文件读取出错 %v", err)
+			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.Data[f.Name()] = data
+		t.pre[f.Name()] = data
 	case ".json":
-		data, err := category.ReadJson(file, obj[0])
+		data, err := category.ReadJson(file, struct{}{})
 		if err != nil {
-			log.Printf("配置文件读取出错 %v", err)
+			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.Data[f.Name()] = data
+		t.pre[f.Name()] = data
 	case ".toml":
-		data, err := category.ReadToml(file, obj[0])
+		data, err := category.ReadToml(file, struct{}{})
 		if err != nil {
-			log.Printf("配置文件读取出错 %v", err)
+			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.Data[f.Name()] = data
+		t.pre[f.Name()] = data
 	default:
-		log.Printf("配置文件类型[%s]不支持,目前仅支持yaml,yml,json,toml格式", ext)
+		return fmt.Errorf("配置文件类型[%s]不支持,目前仅支持yaml,yml,json,toml格式", f.Name())
 	}
-	
+
+	t.File = file
+	return nil
 }
 
 /**
@@ -104,9 +116,6 @@ func (t *CfgFile) ReadConfig(file string, obj... interface{}) {
 * @return value interface{} "value: 自行转换成 string|slice|map 等类型"
 */
 func (t *CfgFile) GetValue(in... string) (interface{}, error) {
-	if t.isStruct {
-		return nil, fmt.Errorf("获取结构体请使用 GetStruct 方法")
-	}
 	if len(in) < 1 || len(in) > 2 {
 		return nil, fmt.Errorf("参数有误,只能是 (section, key) 或则 (key) ")
 	}
@@ -129,10 +138,32 @@ func (t *CfgFile) GetValue(in... string) (interface{}, error) {
 	return nil, fmt.Errorf("没有找到对应的配置")
 }
 
-func (t *CfgFile) GetStruct() []interface{} {
-	rsl := make([]interface{}, 0, len(t.Data))
-	for _, v := range t.Data {
-		rsl = append(rsl, v)
+/*
+* @param filename string 文件名
+* @param obj interface{} 转换的结构体
+*/
+func (t *CfgFile) Unmarshal4Name(name string, obj interface{}) error {
+	if v, ok := t.Data[name]; ok {
+		b, err := json.Marshal(v)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(b, &obj)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	return rsl
+	return fmt.Errorf("%s 文件不存在", name) 
+}
+
+func (t *CfgFile) Reload() error {
+	if len(t.Path) != 0 {
+		t.ReadAll(t.Path)
+	} else if len(t.File) != 0 {
+		t.ReadConfig(t.File)
+	} else {
+		return fmt.Errorf("未读取过配置文件无法重载")
+	}
+	return nil
 }
