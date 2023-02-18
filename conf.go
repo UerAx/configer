@@ -19,21 +19,19 @@ import (
 )
 
 type CfgFile struct {
-	//采用替代方式更新数据,重载的时候刚好查询数据的概率低
-	//无需加锁
 	//mx 		sync.Mutex
 	Path	string
 	File	string
 	Data	map[string]interface{}
-	pre		map[string]interface{}
+	tmp		map[string]interface{}
 }
 
 func NewCfgFile() *CfgFile {
-	return &CfgFile{Data: make(map[string]interface{}, 0), pre: make(map[string]interface{}, 0)}
+	return &CfgFile{Data: make(map[string]interface{}, 0), tmp: make(map[string]interface{}, 0)}
 }
 
 func (t *CfgFile) New() *CfgFile {
-	return &CfgFile{Data: make(map[string]interface{}, 0), pre: make(map[string]interface{}, 0)}
+	return &CfgFile{Data: make(map[string]interface{}, 0), tmp: make(map[string]interface{}, 0)}
 }
 
 /*
@@ -57,7 +55,7 @@ func (t *CfgFile) ReadAll(path string) error {
 			}
 		}
 	}
-	t.Data = t.pre
+	t.Data = t.tmp
 	t.Path = path
 	return nil
 }
@@ -82,26 +80,32 @@ func (t *CfgFile) ReadConfig(file string) error {
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
 
 	case ".yml":
 		data, err := category.ReadYaml(file, struct{}{})
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
 	case ".json":
 		data, err := category.ReadJson(file, struct{}{})
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
 	case ".toml":
 		data, err := category.ReadToml(file, struct{}{})
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
+	case ".ini":
+		data, err := category.ReadIni(file)
+		if err != nil {
+			return fmt.Errorf("配置文件读取出错 %v", err)
+		}
+		t.tmp[f.Name()] = data
 	default:
 		return fmt.Errorf("配置文件类型[%s]不支持,目前仅支持yaml,yml,json,toml格式", f.Name())
 	}
