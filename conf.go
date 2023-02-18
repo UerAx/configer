@@ -19,28 +19,22 @@ import (
 )
 
 type CfgFile struct {
-	//采用替代方式更新数据,重载的时候刚好查询数据的概率低
-	//无需加锁
 	//mx 		sync.Mutex
 	Path	string
 	File	string
 	Data	map[string]interface{}
-	pre		map[string]interface{}
+	tmp		map[string]interface{}
 }
 
-func NewCfgFile() *CfgFile {
-	return &CfgFile{Data: make(map[string]interface{}, 0), pre: make(map[string]interface{}, 0)}
-}
-
-func (t *CfgFile) New() *CfgFile {
-	return &CfgFile{Data: make(map[string]interface{}, 0), pre: make(map[string]interface{}, 0)}
+func (t *CfgFile) New() {
+	t = &CfgFile{Data: make(map[string]interface{}, 0), tmp: make(map[string]interface{}, 0)}
 }
 
 /*
 * read all configuration file on this path
 * @param path string 文件路径
 */
-func (t *CfgFile) ReadAll(path string) error {
+func (t *CfgFile) ReadFiles(path string) error {
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
 		return fmt.Errorf("文件目录打开出错 : %v", err)
@@ -49,7 +43,7 @@ func (t *CfgFile) ReadAll(path string) error {
 	for _, file := range dir {
 		p := path + "/" + file.Name()
 		if file.IsDir() {
-			t.ReadAll(p)
+			t.ReadFiles(p)
 		} else {
 			err = t.ReadConfig(p)
 			if err != nil {
@@ -57,7 +51,7 @@ func (t *CfgFile) ReadAll(path string) error {
 			}
 		}
 	}
-	t.Data = t.pre
+	t.Data = t.tmp
 	t.Path = path
 	return nil
 }
@@ -82,26 +76,32 @@ func (t *CfgFile) ReadConfig(file string) error {
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
 
 	case ".yml":
 		data, err := category.ReadYaml(file, struct{}{})
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
 	case ".json":
 		data, err := category.ReadJson(file, struct{}{})
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
 	case ".toml":
 		data, err := category.ReadToml(file, struct{}{})
 		if err != nil {
 			return fmt.Errorf("配置文件读取出错 %v", err)
 		}
-		t.pre[f.Name()] = data
+		t.tmp[f.Name()] = data
+	case ".ini":
+		data, err := category.ReadIni(file)
+		if err != nil {
+			return fmt.Errorf("配置文件读取出错 %v", err)
+		}
+		t.tmp[f.Name()] = data
 	default:
 		return fmt.Errorf("配置文件类型[%s]不支持,目前仅支持yaml,yml,json,toml格式", f.Name())
 	}
@@ -115,27 +115,38 @@ func (t *CfgFile) ReadConfig(file string) error {
 * @param key	string	"key:必填的参数key"
 * @return value interface{} "value: 自行转换成 string|slice|map 等类型"
 */
-func (t *CfgFile) GetValue(in... string) (interface{}, error) {
-	if len(in) < 1 || len(in) > 2 {
-		return nil, fmt.Errorf("参数有误,只能是 (section, key) 或则 (key) ")
+func (t *CfgFile) GetValue(in... string) interface{} {
+	if len(in) < 1 {
+		return nil
 	}
-	if len(in) == 1 {
-		for _, d := range t.Data {
-			if v, ok := d.(map[string]interface{})[in[0]]; ok {
-				return v, nil
-			}
+	tmp := t.Data
+	// 首层为文件名
+	for _, data := range tmp {
+		// 空文件跳过
+		if _, ok := data.(map[string]interface{}); !ok {
+			continue
 		}
-	}
-	if len(in) == 2 {
-		for _, d := range t.Data {
-			if v, ok := d.(map[string]interface{})[in[0]]; ok {
-				if v1, ok := v.(map[string]interface{})[in[1]]; ok {
-					return v1, nil
+		tmp = data.(map[string]interface{})
+		// 开始遍历该文件是否有key对应的值
+		for i := 0; i < len(in); i++ {
+			if v, ok := tmp[in[i]]; !ok {
+				break
+			} else {
+				// 无法转换证明已经没有下一层
+				if _, ok := v.(map[string]interface{}); !ok {
+					// 非最后一个key但是已经没有下一层证明不在该文件里
+					if i + 1 != len(in) {
+						break
+					}
+					return v
 				}
+				tmp = v.(map[string]interface{})
 			}
 		}
 	}
-	return nil, fmt.Errorf("没有找到对应的配置")
+	
+
+	return nil
 }
 
 /*
@@ -159,7 +170,7 @@ func (t *CfgFile) Unmarshal4Name(name string, obj interface{}) error {
 
 func (t *CfgFile) Reload() error {
 	if len(t.Path) != 0 {
-		t.ReadAll(t.Path)
+		t.ReadFiles(t.Path)
 	} else if len(t.File) != 0 {
 		t.ReadConfig(t.File)
 	} else {

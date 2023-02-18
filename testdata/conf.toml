@@ -12,6 +12,9 @@ ports = [ 8001, 8001, 8002, 8003 ]
 connection_max = 5000
 enabled = true
 
+[database.sed]
+tmp = "fdfdasfd"
+
 [servers]
 
   # 可以使用縮排（TAB或是空格），但不是必要的
