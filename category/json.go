@@ -12,6 +12,7 @@ import (
 )
 
 func ReadJson(file string, obj interface{}) (interface{}, error) {
+	
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
@@ -24,3 +25,4 @@ func ReadJson(file string, obj interface{}) (interface{}, error) {
 
 	return obj, nil
 }
+
