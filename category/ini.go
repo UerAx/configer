@@ -17,9 +17,10 @@ func ReadIni(file string) (interface{}, error) {
 	f := bufio.NewScanner(readFile)
 	f.Split(bufio.ScanLines)
 	
-	hash := make(map[string]map[string]string)
-	hash[""] = make(map[string]string)
+	hash := make(map[string]interface{})
+	hash[""] = make(map[string]interface{})
 	key := ""
+	tmpHash := make(map[string]interface{})
 	for f.Scan() {
 		tmp := strings.TrimSpace(f.Text())
 		if  len(tmp) > 0 && tmp[0] == ';' {
@@ -32,13 +33,14 @@ func ReadIni(file string) (interface{}, error) {
 			if len(ext) == 2 {
 				key = ext[1]
 				if _, ok := hash[key]; !ok {
-					hash[key] = make(map[string]string)
+					tmpHash = make(map[string]interface{})
+					hash[key] = tmpHash
 				}
 			}
 		} else {
 			s := strings.Split(f.Text(), "=")
 			if len(s) > 1 {
-				hash[key][strings.Trim(strings.TrimSpace(s[0]), "\"")] = strings.Trim(strings.TrimSpace(s[1]), "\"")
+				tmpHash[strings.Trim(strings.TrimSpace(s[0]), "\"")] = strings.Trim(strings.TrimSpace(s[1]), "\"")
 			}
 		}
 
