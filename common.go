@@ -179,3 +179,83 @@ func VarIntOrDefault(def int, keys ...string) int {
 	}
 	return val
 }
+
+func VarFloat32(keys ...string) (float32, error) {
+	val := cfg.GetValue(keys...)
+	if val == nil {
+		return 0, errors.New("未找到对应的值")
+	}
+	if v, ok := val.(float32); !ok {
+		return 0, errors.New("无法转换成float32")
+	} else {
+		return v, nil
+	}
+}
+
+func VarFloat32OrDefault(def float32, keys ...string) float32 {
+	val, err := VarFloat32(keys...)
+	if err != nil {
+		return def
+	}
+	return val
+}
+
+func VarFloat64(keys ...string) (float64, error) {
+	val := cfg.GetValue(keys...)
+	if val == nil {
+		return 0, errors.New("未找到对应的值")
+	}
+	if v, ok := val.(float64); !ok {
+		return 0, errors.New("无法转换成float64")
+	} else {
+		return v, nil
+	}
+}
+
+func VarFloat64OrDefault(def float64, keys ...string) float64 {
+	val, err := VarFloat64(keys...)
+	if err != nil {
+		return def
+	}
+	return val
+}
+
+func VarUint(keys ...string) (uint, error) {
+	val := cfg.GetValue(keys...)
+	if val == nil {
+		return 0, errors.New("未找到对应的值")
+	}
+	if v, ok := val.(uint); !ok {
+		return 0, errors.New("无法转换成uint")
+	} else {
+		return v, nil
+	}
+}
+
+func VarUintOrDefault(def uint, keys ...string) uint {
+	val, err := VarUint(keys...)
+	if err != nil {
+		return def
+	}
+	return val
+}
+
+func VarRune(keys ...string) (rune, error) {
+	val := cfg.GetValue(keys...)
+	if val == nil {
+		return 0, errors.New("未找到对应的值")
+	}
+	if v, ok := val.(rune); !ok {
+		return 0, errors.New("无法转换成rune")
+	} else {
+		return v, nil
+	}
+}
+
+func VarRuneOrDefault(def rune, keys ...string) rune {
+	val, err := VarRune(keys...)
+	if err != nil {
+		return def
+	}
+	return val
+}

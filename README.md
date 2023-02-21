@@ -10,8 +10,7 @@ go get github.com/uerax/goconf
 
 goconf.LoadConfig(path)
 
+VarString("section", "key")
 VarStringOrDefault("default", "section", "key")
-VarIntOrDefault("default", "section", "key")
-
 
 ```
