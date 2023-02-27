@@ -1,6 +1,8 @@
 package goconf
 
-import "errors"
+import (
+	"errors"
+)
 
 var cfg *CfgFile
 
@@ -8,6 +10,8 @@ func init() {
 	cfg = &CfgFile{Data: make(map[string]interface{}, 0), tmp: make(map[string]interface{}, 0)}
 }
 
+// 直接获取CfgFile对象, 用于需要自己构建结构体的情况下
+// 将map[filename]的interface{}转成自己需要的结构体
 func NewConfigFile() *CfgFile {
 	return &CfgFile{Data: make(map[string]interface{}, 0), tmp: make(map[string]interface{}, 0)}
 }

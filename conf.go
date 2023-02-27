@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"strings"
@@ -32,9 +31,18 @@ func (t *CfgFile) New() {
 
 /*
 * read all configuration file on this path
-* @param path string 文件路径
+* @param path string 文件目录
 */
 func (t *CfgFile) ReadFiles(path string) error {
+	files, err := os.Stat(path)
+	if err != nil {
+		return fmt.Errorf("获取文件信息出错 : %v", err)
+	}
+
+	if !files.IsDir() {
+		return t.ReadConfig(path)
+	}
+
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
 		return fmt.Errorf("文件目录打开出错 : %v", err)
@@ -42,14 +50,7 @@ func (t *CfgFile) ReadFiles(path string) error {
 	
 	for _, file := range dir {
 		p := path + "/" + file.Name()
-		if file.IsDir() {
-			t.ReadFiles(p)
-		} else {
-			err = t.ReadConfig(p)
-			if err != nil {
-				log.Println(err)
-			}
-		}
+		t.ReadFiles(p)
 	}
 	t.Data = t.tmp
 	t.Path = path
