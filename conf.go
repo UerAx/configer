@@ -107,6 +107,7 @@ func (t *CfgFile) ReadConfig(file string) error {
 		return fmt.Errorf("配置文件类型[%s]不支持,目前仅支持yaml,yml,json,toml格式", f.Name())
 	}
 
+	t.Data = t.tmp
 	t.File = file
 	return nil
 }
