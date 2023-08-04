@@ -7,13 +7,13 @@
 package category
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/BurntSushi/toml"
 )
 
 func ReadToml(file string, obj interface{}) (interface{}, error) {
-	b, err := ioutil.ReadFile(file)
+	b, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}

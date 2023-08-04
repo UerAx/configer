@@ -152,6 +152,150 @@ func VarArray(keys ...string) ([]interface{}, error) {
 	}
 }
 
+func VarArrayInt(keys ...string) ([]int, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]int, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(int); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayInt32(keys ...string) ([]int32, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]int32, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(int32); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayInt64(keys ...string) ([]int64, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]int64, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(int64); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayString(keys ...string) ([]string, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]string, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(string); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayFloat32(keys ...string) ([]float32, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]float32, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(float32); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayFloat64(keys ...string) ([]float64, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]float64, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(float64); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayUInt32(keys ...string) ([]uint32, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]uint32, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(uint32); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayUInt64(keys ...string) ([]uint64, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]uint64, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(uint64); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
+func VarArrayUInt(keys ...string) ([]uint, error) {
+	val, err := VarArray(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	conv := make([]uint, 0, len(val))
+	
+	for _, v := range val {
+		if i, ok := v.(uint); ok {
+			conv = append(conv, i)
+		}
+	}
+	return conv, nil
+}
+
 func VarMap(keys ...string) (map[string]interface{}, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {

@@ -9,7 +9,6 @@ package goconf
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -43,7 +42,7 @@ func (t *CfgFile) ReadFiles(path string) error {
 		return t.ReadConfig(path)
 	}
 
-	dir, err := ioutil.ReadDir(path)
+	dir, err := os.ReadDir(path)
 	if err != nil {
 		return fmt.Errorf("文件目录打开出错 : %v", err)
 	}
