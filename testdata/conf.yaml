@@ -21,6 +21,7 @@ metadata:
             - false
             field3: value
 abc:
+    - 321
     - def:
     - black
     - white

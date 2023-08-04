@@ -2,6 +2,7 @@ package goconf
 
 import (
 	"errors"
+	"log"
 )
 
 var cfg *CfgFile
@@ -163,6 +164,8 @@ func VarArrayInt(keys ...string) ([]int, error) {
 	for _, v := range val {
 		if i, ok := v.(int); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Int", v)
 		}
 	}
 	return conv, nil
@@ -179,6 +182,8 @@ func VarArrayInt32(keys ...string) ([]int32, error) {
 	for _, v := range val {
 		if i, ok := v.(int32); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Int32", v)
 		}
 	}
 	return conv, nil
@@ -195,6 +200,8 @@ func VarArrayInt64(keys ...string) ([]int64, error) {
 	for _, v := range val {
 		if i, ok := v.(int64); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Int64", v)
 		}
 	}
 	return conv, nil
@@ -211,6 +218,8 @@ func VarArrayString(keys ...string) ([]string, error) {
 	for _, v := range val {
 		if i, ok := v.(string); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 String", v)
 		}
 	}
 	return conv, nil
@@ -227,6 +236,8 @@ func VarArrayFloat32(keys ...string) ([]float32, error) {
 	for _, v := range val {
 		if i, ok := v.(float32); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Float32", v)
 		}
 	}
 	return conv, nil
@@ -243,6 +254,8 @@ func VarArrayFloat64(keys ...string) ([]float64, error) {
 	for _, v := range val {
 		if i, ok := v.(float64); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Float64", v)
 		}
 	}
 	return conv, nil
@@ -259,6 +272,8 @@ func VarArrayUInt32(keys ...string) ([]uint32, error) {
 	for _, v := range val {
 		if i, ok := v.(uint32); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Uint32", v)
 		}
 	}
 	return conv, nil
@@ -275,6 +290,8 @@ func VarArrayUInt64(keys ...string) ([]uint64, error) {
 	for _, v := range val {
 		if i, ok := v.(uint64); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Uint64", v)
 		}
 	}
 	return conv, nil
@@ -291,6 +308,8 @@ func VarArrayUInt(keys ...string) ([]uint, error) {
 	for _, v := range val {
 		if i, ok := v.(uint); ok {
 			conv = append(conv, i)
+		} else {
+			log.Printf("%v :无法转换成 Uint", v)
 		}
 	}
 	return conv, nil
