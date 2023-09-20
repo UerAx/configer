@@ -1,7 +1,7 @@
 package goconf
 
 import (
-	"errors"
+	"fmt"
 	"log"
 )
 
@@ -32,10 +32,10 @@ func VarStringOrDefault(def string, keys ...string) string {
 func VarString(keys ...string) (string, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return "", errors.New("未找到对应的值")
+		return "", fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(string); !ok {
-		return "", errors.New("无法转换成string")
+		return "", fmt.Errorf("无法转换成string: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -44,10 +44,10 @@ func VarString(keys ...string) (string, error) {
 func VarInt64(keys ...string) (int64, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(int64); !ok {
-		return 0, errors.New("无法转换成int64")
+		return 0, fmt.Errorf("无法转换成int64: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -64,10 +64,10 @@ func VarInt64OrDefault(def int64, keys ...string) int64 {
 func VarInt32(keys ...string) (int32, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(int32); !ok {
-		return 0, errors.New("无法转换成int32")
+		return 0, fmt.Errorf("无法转换成int32: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -84,10 +84,10 @@ func VarInt32OrDefault(def int32, keys ...string) int32 {
 func VarUint32(keys ...string) (uint32, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(uint32); !ok {
-		return 0, errors.New("无法转换成uint32")
+		return 0, fmt.Errorf("无法转换成uint32: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -104,10 +104,10 @@ func VarUint32OrDefault(def uint32, keys ...string) uint32 {
 func VarUint64(keys ...string) (uint64, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(uint64); !ok {
-		return 0, errors.New("无法转换成uint64")
+		return 0, fmt.Errorf("无法转换成uint64: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -124,10 +124,10 @@ func VarUint64OrDefault(def uint64, keys ...string) uint64 {
 func VarBool(keys ...string) (bool, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return false, errors.New("未找到对应的值")
+		return false, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(bool); !ok {
-		return false, errors.New("无法转换成bool")
+		return false, fmt.Errorf("无法转换成bool: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -144,10 +144,10 @@ func VarBoolOrDefault(def bool, keys ...string) bool {
 func VarArray(keys ...string) ([]interface{}, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return nil, errors.New("未找到对应的值")
+		return nil, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.([]interface{}); !ok {
-		return nil, errors.New("无法转换成数组")
+		return nil, fmt.Errorf("无法转换成数组: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -318,10 +318,10 @@ func VarArrayUInt(keys ...string) ([]uint, error) {
 func VarMap(keys ...string) (map[string]interface{}, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return nil, errors.New("未找到对应的值")
+		return nil, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(map[string]interface{}); !ok {
-		return nil, errors.New("无法转换成Map")
+		return nil, fmt.Errorf("无法转换成Map: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -330,10 +330,10 @@ func VarMap(keys ...string) (map[string]interface{}, error) {
 func VarInt(keys ...string) (int, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(int); !ok {
-		return 0, errors.New("无法转换成int")
+		return 0, fmt.Errorf("无法转换成int: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -350,10 +350,10 @@ func VarIntOrDefault(def int, keys ...string) int {
 func VarFloat32(keys ...string) (float32, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(float32); !ok {
-		return 0, errors.New("无法转换成float32")
+		return 0, fmt.Errorf("无法转换成float32: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -370,10 +370,10 @@ func VarFloat32OrDefault(def float32, keys ...string) float32 {
 func VarFloat64(keys ...string) (float64, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(float64); !ok {
-		return 0, errors.New("无法转换成float64")
+		return 0, fmt.Errorf("无法转换成float64: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -390,10 +390,10 @@ func VarFloat64OrDefault(def float64, keys ...string) float64 {
 func VarUint(keys ...string) (uint, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(uint); !ok {
-		return 0, errors.New("无法转换成uint")
+		return 0, fmt.Errorf("无法转换成uint: %v", keys)
 	} else {
 		return v, nil
 	}
@@ -410,10 +410,10 @@ func VarUintOrDefault(def uint, keys ...string) uint {
 func VarRune(keys ...string) (rune, error) {
 	val := cfg.GetValue(keys...)
 	if val == nil {
-		return 0, errors.New("未找到对应的值")
+		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(rune); !ok {
-		return 0, errors.New("无法转换成rune")
+		return 0, fmt.Errorf("无法转换成rune: %v", keys)
 	} else {
 		return v, nil
 	}
