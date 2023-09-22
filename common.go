@@ -47,7 +47,11 @@ func VarInt64(keys ...string) (int64, error) {
 		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(int64); !ok {
+		if v1, ok := val.(int); ok {
+			return int64(v1), nil
+		} 
 		return 0, fmt.Errorf("无法转换成int64: %v", keys)
+		
 	} else {
 		return v, nil
 	}
@@ -107,6 +111,9 @@ func VarUint64(keys ...string) (uint64, error) {
 		return 0, fmt.Errorf("未找到对应的值: %v", keys)
 	}
 	if v, ok := val.(uint64); !ok {
+		if v1, ok := val.(uint); ok {
+			return uint64(v1), nil
+		}
 		return 0, fmt.Errorf("无法转换成uint64: %v", keys)
 	} else {
 		return v, nil
@@ -201,7 +208,11 @@ func VarArrayInt64(keys ...string) ([]int64, error) {
 		if i, ok := v.(int64); ok {
 			conv = append(conv, i)
 		} else {
-			log.Printf("%v :无法转换成 Int64", v)
+			if v1, ok := v.(int); ok {
+				conv = append(conv, int64(v1))
+			} else {
+				log.Printf("%v :无法转换成 Int64", v)
+			}
 		}
 	}
 	return conv, nil
@@ -291,7 +302,11 @@ func VarArrayUInt64(keys ...string) ([]uint64, error) {
 		if i, ok := v.(uint64); ok {
 			conv = append(conv, i)
 		} else {
-			log.Printf("%v :无法转换成 Uint64", v)
+			if v1, ok := v.(int); ok {
+				conv = append(conv, uint64(v1))
+			} else {
+				log.Printf("%v :无法转换成 Uint64", v)
+			}
 		}
 	}
 	return conv, nil
